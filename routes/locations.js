@@ -1,53 +1,39 @@
-const express = require('express');
+const express = require('express')
 
-const db = require('../db');
+const db = require('../db')
 
-const router = express.Router();
-module.exports = router;
+const router = express.Router()
+module.exports = router
 
 // GET /locations
-router.get('/', (req, res) => {
-  // TODO: Replace this with all of the locations in the database
-  const locations = [
-    {
-      id: 1,
-      name: 'TangleStage',
-      description:
-        'Not the biggest stage, but perhaps the most hip. Not the biggest stage, but perhaps the most hip. Not the biggest stage, but perhaps the most hip.',
-    },
-    {
-      id: 2,
-      name: 'Yella Yurt',
-      description:
-        "It's a freakin' yurt! Get in here! It's a freakin' yurt! Get in here! It's a freakin' yurt! Get in here! It's a freakin' yurt! Get in here!",
-    },
-  ];
-
-  const viewData = { locations };
-  res.render('showLocations', viewData);
-});
+router.get('/', async (req, res) => {
+  try {
+    const locations = await db.getAllLocations()
+    console.log(locations)
+    const viewData = { locations: locations } //array of locations will be value of key locations
+    res.render('showLocations', viewData)
+  } catch (err) {
+    console.error(err.message)
+  }
+})
 
 // GET /locations/4/edit
-router.get('/:id/edit', (req, res) => {
-  const id = Number(req.params.id);
-
-  // TODO: Get the location based on its id and replace this viewData
-  const viewData = {
-    id: id,
-    name: 'TangleStage',
-    description:
-      'Not the biggest stage, but perhaps the most hip. Not the biggest stage, but perhaps the most hip. Not the biggest stage, but perhaps the most hip.',
-  };
-
-  res.render('editLocation', viewData);
-});
+router.get('/:id/edit', async (req, res) => {
+  try {
+    const id = Number(req.params.id)
+    const viewData = await db.getLocationById(id)
+    res.render('editLocation', viewData)
+  } catch (err) {
+    console.error(err.message)
+  }
+})
 
 // POST /locations/edit
-router.post('/edit', (req, res) => {
-  // ASSISTANCE: So you know what's being posted ;)
-  // const { id, name, description } = req.body
-
-  // TODO: Update the location in the database based on its id
-
-  res.redirect('/locations');
-});
+router.post('/edit', async (req, res) => {
+  try {
+    await db.updateLocation(req.body)
+    res.redirect('/locations')
+  } catch (err) {
+    console.error(err.message)
+  }
+})

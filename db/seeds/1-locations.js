@@ -20,5 +20,5 @@ exports.seed = function (knex) {
       name: 'Kombucha Karavan',
       description: 'Whet your whistle with some yummy living organisms.',
     },
-  ]);
-};
+  ])
+}
