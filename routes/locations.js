@@ -5,7 +5,7 @@ const db = require('../db')
 const router = express.Router()
 module.exports = router
 
-// GET /locations
+// COMPLETED: Replace this with all of the locations in the database
 router.get('/', async (req, res) => {
   try {
     const locations = await db.getAllLocations()
@@ -18,6 +18,7 @@ router.get('/', async (req, res) => {
 })
 
 // GET /locations/4/edit
+
 router.get('/:id/edit', async (req, res) => {
   try {
     const id = Number(req.params.id)

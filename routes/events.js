@@ -1,110 +1,98 @@
-const express = require('express');
+const express = require('express')
 
-const { eventDays, capitalise, validateDay } = require('../helpers');
-const db = require('../db');
+const { eventDays, capitalise, validateDay } = require('../helpers')
+const db = require('../db')
 
-const router = express.Router();
-module.exports = router;
+const router = express.Router()
+module.exports = router
 
 // GET /events/add/friday
-router.get('/add/:day', (req, res) => {
-  const day = validateDay(req.params.day);
-  const days = eventDays.map((eventDay) => ({
-    value: eventDay,
-    name: capitalise(eventDay),
-    selected: eventDay === day ? 'selected' : '',
-  }));
+router.get('/add/:day', async (req, res) => {
+  try {
+    const day = validateDay(req.params.day)
+    const days = eventDays.map((eventDay) => ({
+      value: eventDay,
+      name: capitalise(eventDay),
+      selected: eventDay === day ? 'selected' : '',
+    }))
 
-  // TODO: Replace this with all of the locations in the database
-  const locations = [
-    {
-      id: 1,
-      name: 'TangleStage',
-    },
-    {
-      id: 2,
-      name: 'Yella Yurt',
-    },
-  ];
+    const locations = await db.getAllLocations()
 
-  const viewData = { locations, days, day };
-  res.render('addEvent', viewData);
-});
+    const viewData = { locations, days, day }
+    res.render('addEvent', viewData)
+  } catch (err) {
+    console.error(err.message)
+  }
+})
 
 // POST /events/add
-router.post('/add', (req, res) => {
-  // ASSISTANCE: So you know what's being posted ;)
-  // const { name, description, time, locationId } = req.body
-  // const day = validateDay(req.body.day)
+router.post('/add', async (req, res) => {
+  try {
+    const day = req.body.day
 
-  // TODO: Add the event to the database and then redirect
+    await db.addNewEvent(req.body)
 
-  const day = 'friday'; // TODO: Remove this line
-
-  res.redirect(`/schedule/${day}`);
-});
+    res.redirect(`/schedule/${day}`)
+  } catch (err) {
+    console.error(err.message)
+  }
+})
 
 // POST /events/delete
-router.post('/delete', (req, res) => {
-  // const id = Number(req.body.id)
-  // const day = validateDay(req.body.day)
+router.post('/delete', async (req, res) => {
+  try {
+    const id = Number(req.body.id)
+    const day = validateDay(req.body.day)
 
-  // TODO: Delete the event from the database using its id
+    await db.deleteEvent(id)
 
-  const day = 'friday'; // TODO: Remove this line
-
-  res.redirect(`/schedule/${day}`);
-});
+    res.redirect(`/schedule/${day}`)
+  } catch (err) {
+    console.error(err.message)
+  }
+})
 
 // GET /events/3/edit
-router.get('/:id/edit', (req, res) => {
-  const id = Number(req.params.id);
+router.get('/:id/edit', async (req, res) => {
+  try {
+    const id = Number(req.params.id)
 
-  // TODO: Replace event below with the event from the database using its id
-  // NOTE: It should have the same shape as this one
-  const event = {
-    id: id,
-    locationId: 1,
-    day: 'friday',
-    time: '2pm - 3pm',
-    name: 'Slushie Apocalypse I',
-    description:
-      'This is totally a description of this really awesome event that will be taking place during this festival at the Yella Yurt. Be sure to not miss the free slushies cause they are rad!',
-  };
+    const event = await db.getEventById(id)
 
-  // TODO: Replace locations below with all of the locations from the database
-  // NOTE: The objects should have the same shape as these.
-  // The selected property should have a value of
-  // either 'selected' or '' based on event.locationId above.
-  const locations = [
-    { id: 1, name: 'TangleStage', selected: '' },
-    { id: 2, name: 'Yella Yurt', selected: 'selected' },
-    { id: 3, name: 'Puffy Paddock', selected: '' },
-    { id: 4, name: 'Kombucha Karavan', selected: '' },
-  ];
+    const locations = await db.getAllLocations()
 
-  // This is done for you
-  const days = eventDays.map((eventDay) => ({
-    value: eventDay,
-    name: capitalise(eventDay),
-    selected: eventDay === event.day ? 'selected' : '',
-  }));
+    const locationIndex = locations.findIndex(
+      (location) => location.id === event.locationId
+    )
 
-  const viewData = { event, locations, days };
-  res.render('editEvent', viewData);
-});
+    locations[locationIndex].selected = 'selected'
+
+    // This is done for you
+    const days = eventDays.map((eventDay) => ({
+      value: eventDay,
+      name: capitalise(eventDay),
+      selected: eventDay === event.day ? 'selected' : '',
+    }))
+
+    const viewData = { event, locations, days }
+    res.render('editEvent', viewData)
+  } catch (err) {
+    console.error(err.message)
+  }
+})
 
 // POST /events/edit
-router.post('/edit', (req, res) => {
-  // ASSISTANCE: So you know what's being posted ;)
-  // const { name, description, time } = req.body
-  // const id = Number(req.body.id)
-  // const day = validateDay(req.body.day)
-  // const locationId = Number(req.body.locationId)
+router.post('/edit', async (req, res) => {
+  try {
+    const { name, description, time } = req.body
+    const id = Number(req.body.id)
+    const day = validateDay(req.body.day)
+    const locationId = Number(req.body.locationId)
 
-  // TODO: Update the event in the database using the identifiers created above
+    await db.updateEvent({ id, name, description, time, day, locationId })
 
-  const day = 'friday'; // TODO: Remove this line
-
-  res.redirect(`/schedule/${day}`);
-});
+    res.redirect(`/schedule/${day}`)
+  } catch (err) {
+    console.error(err.message)
+  }
+})
