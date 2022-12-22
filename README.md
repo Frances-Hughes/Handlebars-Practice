@@ -4,7 +4,7 @@ Ensure to Install packages, run migrations and seeds, and start the dev server w
 
 Commands might look like this:
 
-npm i
-npm run knex migrate:latest
-npm run knex seed:run
-npm run dev
+npm i, 
+npm run knex migrate:latest, 
+npm run knex seed:run, 
+npm run dev, 
