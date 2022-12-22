@@ -1,6 +1,6 @@
 # Handlebars-Practice
 
-Ensure to Install packages, run migrations and seeds, and start the dev server with npm run dev
+Ensure to Install packages, run migrations and seeds, and start the dev server with npm run dev (view on http://localhost:3000/)
 
 Commands might look like this:
 
