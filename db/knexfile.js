@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('path')
 
 module.exports = {
   development: {
@@ -37,4 +37,4 @@ module.exports = {
       tableName: 'knex_migrations',
     },
   },
-};
+}

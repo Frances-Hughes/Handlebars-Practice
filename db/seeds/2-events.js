@@ -45,5 +45,5 @@ exports.seed = function (knex) {
       description:
         'This event will be taking place at the TangleStage. Be sure to not miss the free slushies cause they are rad!',
     },
-  ]);
-};
+  ])
+}
